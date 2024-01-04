@@ -1,0 +1,65 @@
+{% extends 'base.html' %} {% load humanize %} {% block pageContent %}
+<!DOCTYPE html>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<html>
+<body>
+        <form method="GET" action="{% url 'filtered-invoice-list' %}" class="row g-3">
+            <div class="col-md-4" style="padding: 1%;">
+                <input type="text" class="form-control" name="customer" placeholder="Search by Customer...">
+            </div>
+            <div class="col-md-4" style="padding: 1%;">
+                <input type="date" class="form-control" name="date" placeholder="Filter by Date...">
+            </div>
+            <div class="col-md-3" style="padding: 1%;">
+                <input type="text" class="form-control" name="invoice_id" placeholder="Filter by Invoice ID...">
+            </div>
+            <div class="col-md-1" style="padding: 1%;">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+
+    <div class="invoice-cards">
+        {% for invoice in invoices %}
+            <div class="card">
+                <div class="card-header">
+                    <h3>{{ invoice.transaction }}</h3>
+                    <p>Customer: {{ invoice.customer }}</p>
+                    <p>Date Billed: {{ invoice.date_created|date:"Y-m-d h:i A" }}</p>
+                </div>
+                <div class="card-body">
+
+                    <table class="table table-bordered" id="invoice-list">
+                        <colgroup>
+                            <col width="5%">
+                            <col width="20%">
+                            <col width="20%">
+                            <col width="20%">
+                        </colgroup>
+                        <thead>
+                            <tr class="bg-gradient bg-primary bg-opacity-50 text-light">
+                                <th class="px-2 py-2 text-center"><b>#</b></th>
+                                <th class="px-2 py-2 text-center"><b>Product</b></th>
+                                <th class="px-2 py-2 text-center"><b>Quantity</b></th>
+                                <th class="px-2 py-2 text-center"><b>Price</b></th>
+
+                            </tr>
+                        </thead>    
+                        <tbody>
+                            {% for invoice_item in invoice.invoice_item_set.all %}
+                            <tr>
+                                <td class="px-2 py-1 align-middle text-center">{{ forloop.counter }}</td>
+                                <td class="px-2 py-1 align-middle">{{ invoice_item.product }}</td>
+                                <td class="px-2 py-1 align-middle">{{ invoice_item.quantity }}</td>
+                                <td class="px-2 py-1 align-middle">{{ invoice_item.price }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <h6 style="padding-left: 90%;">Total: {{ invoice.total|floatformat:2|intcomma }}</h6>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
+{% endblock pageContent %}
